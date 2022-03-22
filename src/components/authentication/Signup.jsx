@@ -39,50 +39,12 @@ const Signup = ({ loginUser, loggedIn }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // if (file) {
-    //   const checksum = await fileChecksum(file)
-    //   // POST request to API for authorized URL
-    //   const createFileParams = await fetch(baseURL + '/presigned_url', {
-    //     method: 'POST',
-    //     headers,
-    //     body: JSON.stringify({
-    //       file: {
-    //         filename: file.name,
-    //         byte_size: file.size,
-    //         checksum: checksum,
-    //         content_type: 'image/png',
-    //         metadata: {
-    //           'message': 'image for parsing'
-    //         }
-    //       }
-    //     })
-    //   })
-    //   const presignedFileParams = await createFileParams.json()
-    //   if (!createFileParams.ok) {
-    //     console.log(presignedFileParams.errors)
-    //   } else {
-    //     console.log(presignedFileParams.blob_signed_id)
-    //     setProfilePicture(presignedFileParams.blob_signed_id) 
-    //   }
-    //   // PUT request to S3 to directly upload file and recieve URL
-    //   const awsResponse = await fetch(presignedFileParams.direct_upload.url, {
-    //     method: 'PUT',
-    //     headers: presignedFileParams.direct_upload.headers,
-    //     body: file
-    //   })
-    //   if (!awsResponse.ok) {
-    //     console.log(awsResponse)
-    //   }
-    //   // POST presignedFileParams.blob_signed_id as profile_picture value
-    // }
-    
     const strongParams = {
       user: {
         ...userData
       }
     }
 
-    console.log(strongParams)
     const response = await fetch(baseURL + '/signup', {
       method: 'POST',
       headers,
@@ -152,12 +114,6 @@ const Signup = ({ loginUser, loggedIn }) => {
             onChange={ handleChange }
           />
           <Button onClick={ handleSubmit }>Submit</Button>
-          {/* <Button onClick={ handleUpload }>Submit</Button> */}
-          {/* <input
-            type="file"
-            name="profile_picture"
-            onChange={ handleChange }
-          /> */}
         </Box>
       </Grid>
     </Grid>
