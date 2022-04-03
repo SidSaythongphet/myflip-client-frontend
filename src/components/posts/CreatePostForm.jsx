@@ -100,6 +100,7 @@ const CreatePostForm = ({ currentUser, onNewPost }) => {
 
       const data = await response.json()
       if (response.ok) {
+        console.log(data)
         onNewPost(data)
         navigate('/')
       } else {

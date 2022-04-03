@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { baseURL, headers } from '../../Globals';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -10,16 +9,16 @@ import Collapse from '@mui/material/Collapse';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
 import Switch from '@mui/material/Switch';
-// import AddComment from '../comments/AddComment';
-// import CommentContainer from '../comments/CommentContainer';
-
 import DeletePostButton from './DeletePostButton';
-import { Button } from '@mui/material';
+import { Grid } from '@mui/material';
+import AddComment from '../comments/AddComment';
+import CommentContainer from '../comments/CommentContainer';
+import LikeButton from './LikeButton';
+import FollowButton from './FollowButton';
+
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -32,89 +31,67 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-const PostCard = ({ post, currentUser, onDeletePost }) => {
-    const { id, body, image_url, user } = post
-    const [expand, setExpand] = useState(false)
-    const [expandComment, setExpandComment] = useState(false)
-    const [checked, setChecked] = useState(false)
-    const [comments, setComments] = useState(post.comments)
+const PostCard = ({ post, currentUser, onDeletePost, onFollow }) => {
+  const { id, body, image_url, user } = post
+  const [expand, setExpand] = useState(false)
+  const [expandComment, setExpandComment] = useState(false)
+  const [checked, setChecked] = useState(false)
+  const [comments, setComments] = useState(post.comments)
+  const [likes, setLikes] = useState(post.likes)
 
-    const handleAddComment = comment => {
-      setComments([...comments, comment])
-      setExpandComment(!expandComment)
-    }
+  const handleAddComment = comment => {
+    setComments([...comments, comment])
+    setExpandComment(!expandComment)
+  }
 
-    const handleChange = (event) => {
-        setChecked(event.target.checked);
-    };
-    const handleExpandCommentContainer = async () => {
-        setExpand(!expand)
-    }
-    const handleExpandComment = () => {
-        setExpandComment(!expandComment);
-    }
+  const handleChange = (event) => {
+    setChecked(event.target.checked);
+  }
 
-    const handleFollow = async () => {
+  const handleExpandCommentContainer = async () => {
+    setExpand(!expand)
+  }
 
-      const strongParams = {
-        follow: {
-          follower_id: currentUser.id,
-          following_id: user.id
-        }
-      }
+  const handleExpandComment = () => {
+    setExpandComment(!expandComment);
+  }
 
-      const response = await fetch(baseURL + '/follows', {
-        method: "POST",
-        headers: {
-          ...headers,
-          "Authorization": `Bearer ${ localStorage.getItem('jwt') }`
-        },
-        body: JSON.stringify(strongParams)
-      })
-      // response.json() returns a Promise, we must await it
-      const data = await response.json()
-      if (response.ok) {
-        console.log(data)
-      } else {
-          //TODO add toast error
-          console.log(data.error)
-      }   
-    }
+  const handleLike = (like) => {
+    setLikes([...likes, like])
+  }
 
-    return (
-      <Card sx={{ maxWidth: 400 }}>
+  const handleUnlike = () => {
+    const updateLikes = likes.filter(like => like.user_id !== currentUser.id)
+    setLikes(updateLikes)
+  }
+
+  return (
+    <Grid item>
+      <Card sx={{ width: 400 }}>
         <CardHeader
           avatar={
             <Avatar
-                src={ user.profile_picture_url ? user.profile_picture_url  : null }
+              src={ user.profile_picture_url ? user.profile_picture_url  : null }
             />
           }
           action={
-            currentUser.id === user.id ? <DeletePostButton post={ post } onDeletePost={ onDeletePost }/> : null
+            currentUser.id === user.id ? <DeletePostButton post={ post } onDeletePost={ onDeletePost }/> : <FollowButton currentUser={ currentUser } post={ post } onFollow={ onFollow } />
           }
-          title={ user.username }
+          title={ <Typography>{ user.username }</Typography> }
         />
         <CardMedia
           component="img"
           height="400"
           image={ image_url[!checked ? 0 : 1] }
           alt={ user.first_name + "'s image" }
-          />
-          <Button onClick={ handleFollow }>Follow</Button>
+        />
         <Switch
-            checked={checked}
-            onChange={handleChange}
-            inputProps={{ 'aria-label': 'controlled' }}
+          checked={checked}
+          onChange={handleChange}
+          inputProps={{ 'aria-label': 'controlled' }}
         />  
-        <CardContent>
-            <Typography variant="body2" color="text.secondary">
-                { body }
-            </Typography>
-        </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
-          </IconButton>
+          <LikeButton currentUser={ currentUser } post={ post } onLike={ handleLike } onUnlike={ handleUnlike }/>
           <IconButton aria-label="add comment" onClick={ handleExpandComment }>
             <AddCommentIcon />
           </IconButton>
@@ -127,14 +104,21 @@ const PostCard = ({ post, currentUser, onDeletePost }) => {
             <ExpandMoreIcon />
           </ExpandMore>
         </CardActions>        
+        <CardContent>
+          <Typography variant="subtitle1" color="text.secondary">{ likes.length + ' likes'}</Typography>
+          <Typography variant="body1">
+            { body }
+          </Typography>
+        </CardContent>
         <Collapse in={expandComment} timeout="auto" unmountOnExit>
-            {/* <AddComment post_id={ id } currentUser={ currentUser } onHandleComment={ handleAddComment }/> */}
+          <AddComment post_id={ id } currentUser={ currentUser } onHandleComment={ handleAddComment }/>
         </Collapse>
         <Collapse in={expand} timeout="auto" >
-            {/* {comments.length === 0 ? <Typography>No Comments</Typography> : <CommentContainer  comments={ comments }/>} */}
+          {comments.length === 0 ? <Typography>No Comments</Typography> : <CommentContainer  comments={ comments }/>}
         </Collapse>
       </Card>
-    )
+    </Grid>
+  )
 }
 
 export default PostCard
