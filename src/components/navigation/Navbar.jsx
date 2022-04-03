@@ -5,7 +5,6 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
-import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
@@ -34,26 +33,28 @@ const Navbar = ({ logoutUser, loggedIn, currentUser }) => {
   }
 
   return (
-    <AppBar position="sticky">
-      <Container maxWidth="xl">
+    <Box 
+      sx={{ flexGrow: 1 }}
+      style={{
+        margin: '0 0 100px'
+      }}
+    >
+      <AppBar position="fixed" 
+        style={{
+          backgroundColor: '#800000'
+        }}
+      >
         <Toolbar disableGutters>
           <Typography
-            variant="h6"
+            variant="h4"
             noWrap
             component="div"
-            sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+            fontFamily="Permanent Marker"
+            sx={{ flexGrow: 1, display: { xs: 'flex' }, padding: '0 50px' }}
           >
             myFlip
           </Typography>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
-          >
-            myFlip
-          </Typography>
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, display: { xs: 'flex' }, padding: '0 50px' }}>
             {   
               !loggedIn 
               ?
@@ -64,19 +65,19 @@ const Navbar = ({ logoutUser, loggedIn, currentUser }) => {
               :
               <>
                 <Tooltip title="New Post">
-                  <IconButton  sx={{ p: 0 }}>
-                    <Link to='/newpost' style={{ textDecoration: 'none' }}><AddIcon fontSize='large'/></Link>
+                  <IconButton  sx={{ p: "0, 5" }}>
+                    <Link to='/newpost' style={{ textDecoration: 'none', color: '#FFF' }}><AddIcon fontSize='large'/></Link>
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Tooltip title={ first_name + ' ' + last_name }>
+                  <IconButton onClick={ handleOpenUserMenu } sx={{ p: "0, 5" }}>
                     <Avatar alt={ first_name + last_name } src={ profile_picture_url === "" ? "/static/images/avatar/2.jpg" : profile_picture_url } />
                   </IconButton>
                 </Tooltip>
                 <Menu
                   sx={{ mt: '45px' }}
                   id="menu-appbar"
-                  anchorEl={anchorElUser}
+                  anchorEl={ anchorElUser }
                   anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -86,11 +87,11 @@ const Navbar = ({ logoutUser, loggedIn, currentUser }) => {
                     vertical: 'top',
                     horizontal: 'right',
                   }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
+                  open={ Boolean(anchorElUser) }
+                  onClose={ handleCloseUserMenu }
                 >
-                  <MenuItem onClick={handleCloseUserMenu}>
-                    <Link to='/' style={{ textDecoration: 'none' }}>
+                  <MenuItem onClick={ handleCloseUserMenu }>
+                    <Link to={`/dashboard/${ username }`} style={{ textDecoration: 'none', color: 'black' }}>
                       <Avatar alt={ first_name + last_name } src={ profile_picture_url === "" ? "/static/images/avatar/2.jpg" : profile_picture_url } />
                       <Stack>
                         <Typography textAlign="left">{ first_name + ' ' + last_name }</Typography>
@@ -98,23 +99,25 @@ const Navbar = ({ logoutUser, loggedIn, currentUser }) => {
                       </Stack>
                     </Link>
                   </MenuItem>
-                  <MenuItem onClick={handleCloseUserMenu}>
-                    <Link to={`/dashboard/${ username }`} style={{ textDecoration: 'none' }}>
-                      <DashboardIcon/>
-                      <Typography textAlign="center">Dashboard</Typography>
+                  <MenuItem onClick={ handleCloseUserMenu } >
+                    <Link to='/' style={{ textDecoration: 'none', color: 'black' }}>
+                      <Avatar sx={{ bgcolor: '#800000' }}><DashboardIcon/></Avatar>
+                      <Typography textAlign="center">Posts</Typography>
                     </Link>
                   </MenuItem>
-                  <MenuItem onClick={ handleLogout }>
-                    <LogoutIcon />
-                    <Typography textAlign="center">Logout</Typography>
+                  <MenuItem onClick={ handleLogout } >
+                    <Link to='/' style={{ textDecoration: 'none', color: 'black' }}>
+                      <Avatar sx={{ bgcolor: '#800000' }}><LogoutIcon/></Avatar>
+                      <Typography textAlign="center">Logout</Typography>
+                    </Link>
                   </MenuItem>
                 </Menu>
               </>
             }
           </Box>
         </Toolbar>
-      </Container>
-    </AppBar>
+      </AppBar>
+    </Box>
   )
 }
 
