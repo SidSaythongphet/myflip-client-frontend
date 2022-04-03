@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Grid, TextField } from '@mui/material';
+import { Button, Grid, TextField, Typography } from '@mui/material';
 import { baseURL, headers } from '../../Globals';
 import { useNavigate } from 'react-router-dom';
-import { fileChecksum } from '../utils/checksum';
+import StyledBox from '../styles/StyledBox';
 
-const Signup = ({ loginUser, loggedIn }) => {
+const Signup = ({ loginUser, loggedIn, notifyErrors }) => {
   const [userData, setUserData] = useState({
     first_name: "", 
     last_name: "",
@@ -13,37 +13,24 @@ const Signup = ({ loginUser, loggedIn }) => {
     password: "", 
     password_confirmation: ""
   })
-  // const [file, setFile] = useState(null)
-  // const [profilePicture, setProfilePicture] = useState("")
 
   const navigate = useNavigate()
 
   useEffect(() => {
     if (loggedIn) {
-        navigate('/')
+      navigate('/')
     }
   }, [loggedIn])
 
   const handleChange = (e) => {
-    // if (e.target.type === 'file') {
-    //   setFile(e.target.files[0])
-    // }
-    // if (e.target.name !== 'profile_picture') {
-      setUserData({
-        ...userData,
-        [e.target.name]: e.target.value
-      })
-    // }
+    setUserData({
+      ...userData,
+      [e.target.name]: e.target.value
+    })
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
-    const strongParams = {
-      user: {
-        ...userData
-      }
-    }
 
     const response = await fetch(baseURL + '/signup', {
       method: 'POST',
@@ -56,65 +43,90 @@ const Signup = ({ loginUser, loggedIn }) => {
       localStorage.setItem('jwt', data.token)
       navigate(`/dashboard/${ data.user.username }`)
     } else {
-      console.log(data.errors)
+      data.errors.map(err => notifyErrors(err))
     }
   }
 
   return (
     <Grid container justifyContent="center">
       <Grid item>
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            required
-            label="First Name"
-            name="first_name"
-            value={ userData.first_name }
-            onChange={ handleChange }
-          />
-          <TextField
-            required
-            label="Last Name"
-            name="last_name"
-            value={ userData.last_name }
-            onChange={ handleChange }
-          />
-          <TextField
-            required
-            label="Username"
-            name="username"
-            value={ userData.username }
-            onChange={ handleChange }
-          />
-          <TextField
-            required
-            label="Email"
-            type="email"
-            name="email"
-            value={ userData.email }
-            onChange={ handleChange }
-          />
-          <TextField
-            required
-            label="Password"
-            type="password"
-            name="password"
-            value={ userData.password }
-            onChange={ handleChange }
-          />
-          <TextField
-            required
-            label="Confirm Password"
-            type="password"
-            name="password_confirmation"
-            value={ userData.password_confirmation }
-            onChange={ handleChange }
-          />
-          <Button onClick={ handleSubmit }>Submit</Button>
-        </Box>
+        <StyledBox width="800px">
+          <Grid container spacing={2}>
+            <Grid item xs={12} textAlign="center">
+              <Typography variant='h4'>Create an Account</Typography>
+            </Grid>
+            <Grid item xs={12} container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label="First Name"
+                  name="first_name"
+                  fullWidth
+                  value={ userData.first_name }
+                  onChange={ handleChange }
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label="Last Name"
+                  name="last_name"
+                  fullWidth
+                  value={ userData.last_name }
+                  onChange={ handleChange }
+                />
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                label="Username"
+                name="username"
+                fullWidth
+                value={ userData.username }
+                onChange={ handleChange }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                label="Email"
+                type="email"
+                name="email"
+                fullWidth
+                value={ userData.email }
+                onChange={ handleChange }
+              />
+            </Grid>
+            <Grid item xs={12} container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label="Password"
+                  type="password"
+                  name="password"
+                  fullWidth
+                  value={ userData.password }
+                  onChange={ handleChange }
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label="Confirm Password"
+                  type="password"
+                  name="password_confirmation"
+                  fullWidth
+                  value={ userData.password_confirmation }
+                  onChange={ handleChange }
+                />
+              </Grid>
+            </Grid>
+            <Grid item xs={12} textAlign="center">
+              <Button onClick={ handleSubmit } variant='contained'>Submit</Button>
+            </Grid>
+          </Grid>
+        </StyledBox>
       </Grid>
     </Grid>
   )
