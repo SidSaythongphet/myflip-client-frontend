@@ -15,4 +15,5 @@ MyFlip is intended to be a social media project using React.js, inspired by inst
 - Updating User Information
 - Creating a Post, which includes two photos and an optional message
 - User can like individual posts
+- User can comment on individual posts
 - User can follow other users
