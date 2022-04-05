@@ -6,11 +6,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { fileChecksum } from '../utils/checksum';
 import { baseURL, headers } from '../../Globals';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const UpdateProfilePicture = ({ id, onUpdateUser, notifyErrors }) => {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState(null)
   const [imageURL, setImageURL] = useState([])
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     if (file) {
@@ -29,6 +31,7 @@ const UpdateProfilePicture = ({ id, onUpdateUser, notifyErrors }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setUploading(true)
     
     const checksum = await fileChecksum(file)
     // POST request to API for authorized URL
@@ -75,8 +78,10 @@ const UpdateProfilePicture = ({ id, onUpdateUser, notifyErrors }) => {
     if (response.ok) {
       onUpdateUser(data)
       setOpen(false)
+      setUploading(false)
     } else {
       data.errors.map(err => notifyErrors(err))
+      setUploading(false)
     }
   }
   
@@ -96,6 +101,7 @@ const UpdateProfilePicture = ({ id, onUpdateUser, notifyErrors }) => {
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSubmit}>Submit</Button>
+          { uploading ? <CircularProgress /> : null }
         </DialogActions>
       </Dialog>
     </div>
