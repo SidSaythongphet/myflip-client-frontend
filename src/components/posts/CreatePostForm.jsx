@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Grid, Stack, TextField } from '@mui/material';
+import { Box, Button, CircularProgress, Grid, Stack, TextField } from '@mui/material';
 import { baseURL, headers } from '../../Globals';
 import { Navigate, useNavigate } from 'react-router-dom';
 import StyledBox from '../styles/StyledBox';
@@ -12,6 +12,7 @@ const CreatePostForm = ({ currentUser, onNewPost }) => {
   const [beforePreview, setBeforePreview] = useState(null)
   const [after, setAfter] = useState(null)
   const [afterPreview, setAfterPreview] = useState(null)
+  const [uploading, setUploading] = useState(false)
 
   const navigate = useNavigate()
 
@@ -28,6 +29,7 @@ const CreatePostForm = ({ currentUser, onNewPost }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setUploading(true)
 
     // POST request to API for authorized URL
     const createPresignedUrl = async(file, byte_size, checksum) => {
@@ -100,46 +102,51 @@ const CreatePostForm = ({ currentUser, onNewPost }) => {
 
       const data = await response.json()
       if (response.ok) {
-        console.log(data)
+        setUploading(false)
         onNewPost(data)
         navigate('/')
       } else {
-        console.log(data.errors)
+        data.errors.map(err => notifyErrors(err))
       }
   }
 
   return (
-    <StyledBox>
-      <Grid container>
-        <Grid item xs={6}>
-          <Stack alignItems="center">
-            <input type="file" accept="image/*" onChange={ (e) => setBefore(e.target.files[0])} />
-            <Box sx={{ border: 1, height: '300px', width: '250px' }}>
-              { beforePreview ? <img src={beforePreview} style={{ height: '300px'}} alt="preview before"/> : null }
-            </Box>
-          </Stack>
-        </Grid>
-        <Grid item xs={6}>
-          <Stack alignItems="center">
-            <input type="file" accept="image/*" onChange={ (e) => setAfter(e.target.files[0])} />
-            <Box sx={{ border: 1, height: '300px', width: '250px' }}>
-              { afterPreview ? <img src={afterPreview} style={{ height: '300px'}} alt="preview after"/> : null }
-            </Box>
-          </Stack>    
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Write something"
-            name="body"
-            value={ body }
-            onChange={ (e) => setBody(e.target.value) }
-          />  
-        </Grid>
-        <Grid item xs={12}>
-          <Button onClick={handleSubmit}>Submit</Button>
-        </Grid>
+    <Grid container justifyContent="center">
+      <Grid item>
+        <StyledBox width="1000px">
+          <Grid container justifyContent="center" spacing={2}>
+            <Grid item xs={6}>
+              <Stack alignItems="center">
+                <input type="file" accept="image/*" onChange={ (e) => setBefore(e.target.files[0])} />
+                <Box sx={{ border: 1, height: '300px', width: '250px' }}>
+                  { beforePreview ? <img src={beforePreview} style={{ height: '300px'}} alt="preview before"/> : null }
+                </Box>
+              </Stack>
+            </Grid>
+            <Grid item xs={6}>
+              <Stack alignItems="center">
+                <input type="file" accept="image/*" onChange={ (e) => setAfter(e.target.files[0])} />
+                <Box sx={{ border: 1, height: '300px', width: '250px' }}>
+                  { afterPreview ? <img src={afterPreview} style={{ height: '300px'}} alt="preview after"/> : null }
+                </Box>
+              </Stack>    
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Write something"
+                name="body"
+                value={ body }
+                onChange={ (e) => setBody(e.target.value) }
+              />  
+            </Grid>
+            <Grid item xs={12}>
+              <Button onClick={handleSubmit}>Submit</Button>
+              { uploading ? <CircularProgress /> : null }
+            </Grid>
+          </Grid>
+        </StyledBox>
       </Grid>
-    </StyledBox>
+    </Grid>
   )
 }
 
