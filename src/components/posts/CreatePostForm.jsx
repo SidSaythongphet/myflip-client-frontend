@@ -4,6 +4,8 @@ import { baseURL, headers } from '../../Globals';
 import { Navigate, useNavigate } from 'react-router-dom';
 import StyledBox from '../styles/StyledBox';
 import { fileChecksum } from '../utils/checksum';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const CreatePostForm = ({ currentUser, onNewPost }) => {
@@ -106,7 +108,7 @@ const CreatePostForm = ({ currentUser, onNewPost }) => {
         onNewPost(data)
         navigate('/')
       } else {
-        data.errors.map(err => notifyErrors(err))
+        toast.error(data.error)
       }
   }
 
