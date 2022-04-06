@@ -24,7 +24,9 @@ const DashboardPage = ({ currentUser, onUpdateUser, followees, notifyErrors }) =
         console.log(data.error)
       }
     }
-    fetchData()
+    if (currentUser.id) {
+      fetchData()
+    }
   }, [])
 
   const handleDeletePost = (deletedPost) => {
